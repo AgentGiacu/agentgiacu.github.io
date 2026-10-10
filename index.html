@@ -1,0 +1,825 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Giacomo Veglio — Physics of Complex Systems MSc student. Econophysics, agent-based modelling, networks and data science." />
+<meta name="author" content="Giacomo Veglio" />
+<title>Giacomo Veglio — Physics of Complex Systems</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='20' r='10' fill='%2322d3ee'/%3E%3Ccircle cx='20' cy='75' r='10' fill='%23f472b6'/%3E%3Ccircle cx='80' cy='75' r='10' fill='%23a78bfa'/%3E%3Cpath d='M50 20 L20 75 L80 75 Z' fill='none' stroke='%23e2e8f0' stroke-width='6'/%3E%3C/svg%3E" />
+<style>
+  :root {
+    --bg: #0b1020;
+    --bg-soft: #111832;
+    --card: rgba(255, 255, 255, 0.045);
+    --card-border: rgba(255, 255, 255, 0.09);
+    --text: #e8ecf6;
+    --muted: #a3aec8;
+    --cyan: #22d3ee;
+    --violet: #a78bfa;
+    --pink: #f472b6;
+    --amber: #fbbf24;
+    --green: #34d399;
+    --radius: 16px;
+    --font: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+    --mono: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+
+  /* ---- bilingual toggle: show only active language ---- */
+  html[lang="en"] .it { display: none; }
+  html[lang="it"] .en { display: none; }
+
+  /* ---- animated network background ---- */
+  #netbg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    opacity: 0.55;
+  }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---- nav ---- */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(12px);
+    background: rgba(11, 16, 32, 0.75);
+    border-bottom: 1px solid var(--card-border);
+  }
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 24px;
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+  .nav-logo {
+    font-weight: 800;
+    font-size: 1.05rem;
+    text-decoration: none;
+    color: var(--text);
+    letter-spacing: 0.02em;
+  }
+  .nav-logo span { color: var(--cyan); }
+  .nav-links { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.92rem;
+    padding: 6px 12px;
+    border-radius: 999px;
+    transition: color 0.2s, background 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.07); }
+
+  #langBtn {
+    margin-left: 8px;
+    cursor: pointer;
+    border: 1px solid var(--card-border);
+    background: linear-gradient(120deg, rgba(34,211,238,0.15), rgba(167,139,250,0.15));
+    color: var(--text);
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 0.8rem;
+    padding: 6px 14px;
+    border-radius: 999px;
+    transition: transform 0.15s, box-shadow 0.2s;
+  }
+  #langBtn:hover { transform: translateY(-1px); box-shadow: 0 0 14px rgba(34,211,238,0.35); }
+
+  /* ---- hero ---- */
+  header.hero {
+    padding: 110px 0 90px;
+    position: relative;
+    text-align: center;
+  }
+  .hero-badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    border: 1px solid rgba(34,211,238,0.35);
+    border-radius: 999px;
+    padding: 6px 16px;
+    margin-bottom: 22px;
+    background: rgba(34,211,238,0.07);
+  }
+  h1 {
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    background: linear-gradient(100deg, #e8ecf6 20%, var(--cyan) 55%, var(--violet) 90%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero-sub {
+    max-width: 680px;
+    margin: 22px auto 34px;
+    color: var(--muted);
+    font-size: 1.12rem;
+  }
+  .hero-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 12px 26px;
+    border-radius: 999px;
+    transition: transform 0.15s, box-shadow 0.2s, background 0.2s;
+  }
+  .btn-primary {
+    color: #061018;
+    background: linear-gradient(100deg, var(--cyan), var(--violet));
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(34,211,238,0.4); }
+  .btn-ghost {
+    color: var(--text);
+    border: 1px solid var(--card-border);
+    background: rgba(255,255,255,0.04);
+  }
+  .btn-ghost:hover { transform: translateY(-2px); background: rgba(255,255,255,0.09); }
+
+  /* ---- sections ---- */
+  section { padding: 66px 0; }
+  .sec-title {
+    font-size: 1.9rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+  .sec-title i {
+    font-style: normal;
+    color: var(--cyan);
+    font-family: var(--mono);
+  }
+  .sec-sub { color: var(--muted); margin-bottom: 36px; max-width: 640px; }
+
+  /* about */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+  .about-text p { margin-bottom: 14px; color: var(--muted); }
+  .about-text strong { color: var(--text); }
+  .facts {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 22px;
+  }
+  .facts h3 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--violet); margin-bottom: 12px; }
+  .fact { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,0.08); font-size: 0.92rem; }
+  .fact:last-child { border-bottom: none; }
+  .fact b { color: var(--text); text-align: right; }
+
+  /* project cards */
+  .proj-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 22px;
+  }
+  .proj {
+    position: relative;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.18s, box-shadow 0.25s, border-color 0.25s;
+    overflow: hidden;
+  }
+  .proj::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--cyan), var(--violet), var(--pink));
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+  .proj:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 40px rgba(0,0,0,0.45);
+    border-color: rgba(167,139,250,0.35);
+  }
+  .proj:hover::before { opacity: 1; }
+  .proj-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .proj-year {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .badge {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    padding: 3px 10px;
+    white-space: nowrap;
+  }
+  .badge-wip { color: var(--amber); border: 1px solid rgba(251,191,36,0.4); background: rgba(251,191,36,0.08); }
+  .badge-done { color: var(--green); border: 1px solid rgba(52,211,153,0.4); background: rgba(52,211,153,0.08); }
+  .proj h3 { font-size: 1.08rem; font-weight: 700; line-height: 1.35; }
+  .proj p { color: var(--muted); font-size: 0.92rem; flex-grow: 1; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--cyan);
+    background: rgba(34,211,238,0.08);
+    border: 1px solid rgba(34,211,238,0.2);
+    border-radius: 999px;
+    padding: 2px 10px;
+  }
+  .proj-meta { font-size: 0.8rem; color: var(--muted); font-style: italic; }
+
+  /* education timeline */
+  .timeline { position: relative; margin-left: 8px; }
+  .timeline::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 6px;
+    bottom: 6px;
+    width: 2px;
+    background: linear-gradient(180deg, var(--cyan), var(--violet), var(--pink));
+    opacity: 0.5;
+  }
+  .tl-item { position: relative; padding: 0 0 34px 30px; }
+  .tl-item:last-child { padding-bottom: 4px; }
+  .tl-item::before {
+    content: "";
+    position: absolute;
+    left: -6px;
+    top: 6px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 3px solid var(--cyan);
+    box-shadow: 0 0 12px rgba(34,211,238,0.6);
+  }
+  .tl-item:nth-child(2)::before { border-color: var(--violet); box-shadow: 0 0 12px rgba(167,139,250,0.6); }
+  .tl-item:nth-child(3)::before { border-color: var(--pink); box-shadow: 0 0 12px rgba(244,114,182,0.6); }
+  .tl-years { font-family: var(--mono); font-size: 0.8rem; color: var(--cyan); }
+  .tl-item:nth-child(2) .tl-years { color: var(--violet); }
+  .tl-item:nth-child(3) .tl-years { color: var(--pink); }
+  .tl-item h3 { font-size: 1.08rem; margin: 4px 0 2px; }
+  .tl-item .school { color: var(--muted); font-size: 0.92rem; }
+  .tl-item ul { margin: 10px 0 0 18px; color: var(--muted); font-size: 0.9rem; }
+  .tl-item li { margin-bottom: 4px; }
+  .grade {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--amber);
+    border: 1px solid rgba(251,191,36,0.35);
+    border-radius: 999px;
+    padding: 1px 10px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  /* skills */
+  .skill-group { margin-bottom: 26px; }
+  .skill-group h3 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--violet);
+    margin-bottom: 12px;
+  }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    font-size: 0.86rem;
+    font-weight: 600;
+    padding: 7px 15px;
+    border-radius: 10px;
+    border: 1px solid var(--card-border);
+    background: var(--card);
+    transition: transform 0.15s, border-color 0.2s;
+  }
+  .chip:hover { transform: translateY(-2px); border-color: rgba(34,211,238,0.45); }
+  .chip.python { border-color: rgba(34,211,238,0.4); color: var(--cyan); }
+  .chip.core { border-color: rgba(244,114,182,0.4); color: var(--pink); }
+  .chip.tool { border-color: rgba(251,191,36,0.4); color: var(--amber); }
+
+  /* roles */
+  .roles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+  .role {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+  }
+  .role h3 { font-size: 0.98rem; margin-bottom: 4px; }
+  .role .when { font-family: var(--mono); font-size: 0.75rem; color: var(--pink); }
+  .role p { color: var(--muted); font-size: 0.9rem; margin-top: 6px; }
+
+  /* contact */
+  .contact-box {
+    text-align: center;
+    background: linear-gradient(140deg, rgba(34,211,238,0.08), rgba(167,139,250,0.08), rgba(244,114,182,0.08));
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 54px 24px;
+  }
+  .contact-box h2 {
+    font-size: 1.7rem;
+    margin-bottom: 10px;
+    background: linear-gradient(100deg, var(--cyan), var(--pink));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .contact-box p { color: var(--muted); margin-bottom: 28px; }
+  .contact-links { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+  .contact-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.92rem;
+    padding: 11px 22px;
+    border-radius: 999px;
+    border: 1px solid var(--card-border);
+    background: rgba(255,255,255,0.05);
+    transition: transform 0.15s, border-color 0.2s;
+  }
+  .contact-links a:hover { transform: translateY(-2px); border-color: rgba(34,211,238,0.5); }
+  .contact-links svg { width: 16px; height: 16px; fill: var(--cyan); }
+
+  footer {
+    border-top: 1px solid var(--card-border);
+    padding: 30px 24px 40px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  footer .lang-note { font-family: var(--mono); font-size: 0.75rem; opacity: 0.7; }
+
+  @media (max-width: 780px) {
+    .about-grid { grid-template-columns: 1fr; }
+    .nav-inner { flex-direction: column; gap: 10px; }
+    header.hero { padding: 70px 0 60px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .proj, .btn, .chip, .contact-links a, #langBtn { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="netbg" aria-hidden="true"></canvas>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="#top">gv<span>.</span>complexity</a>
+    <div class="nav-links">
+      <a href="#about"><span class="en">About</span><span class="it">Chi sono</span></a>
+      <a href="#projects"><span class="en">Projects</span><span class="it">Progetti</span></a>
+      <a href="#education"><span class="en">Education</span><span class="it">Formazione</span></a>
+      <a href="#skills"><span class="en">Skills</span><span class="it">Competenze</span></a>
+      <a href="#contact"><span class="en">Contact</span><span class="it">Contatti</span></a>
+      <button id="langBtn" aria-label="Switch language">IT</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-badge">MSc Physics of Complex Systems — Socio-Economic Track</div>
+    <h1>Giacomo Veglio</h1>
+    <p class="hero-sub">
+      <span class="en">I study how simple local interactions generate complex collective behaviour — from financial markets and the world trade web to agent-based simulations. Physicist by training, econophysicist by curiosity.</span>
+      <span class="it">Studio come semplici interazioni locali generano comportamenti collettivi complessi — dai mercati finanziari alla rete del commercio mondiale, fino alle simulazioni ad agenti. Fisico per formazione, econofisico per curiosità.</span>
+    </p>
+    <div class="hero-btns">
+      <a class="btn btn-primary" href="#projects"><span class="en">Explore my projects</span><span class="it">Scopri i miei progetti</span></a>
+      <a class="btn btn-ghost" href="https://github.com/AgentGiacu" target="_blank" rel="noopener">GitHub ↗</a>
+      <a class="btn btn-ghost" href="https://www.linkedin.com/in/giacomo-veglio-004ba0202" target="_blank" rel="noopener">LinkedIn ↗</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ABOUT -->
+  <section id="about">
+    <h2 class="sec-title"><i>01.</i> <span class="en">About me</span><span class="it">Chi sono</span></h2>
+    <p class="sec-sub">
+      <span class="en">Physicist diving into complexity science and its economic applications.</span>
+      <span class="it">Fisico che si tuffa nella scienza dei sistemi complessi e nelle sue applicazioni economiche.</span>
+    </p>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>
+          <span class="en">I am a Joint <strong>MSc student in Physics of Complex Systems</strong> (Socio-Economic track) at the University of Turin and the University of Eastern Piedmont, after earning my <strong>BSc in Physics</strong> at the University of Padua. My work lives at the intersection of statistical physics and economics: econophysics, economic complexity, network science and agent-based modelling.</span>
+          <span class="it">Sono studente di <strong>Laurea Magistrale in Fisica dei Sistemi Complessi</strong> (curriculum socio-economico) in convenzione tra l'Università di Torino e l'Università del Piemonte Orientale, dopo la <strong>Laurea Triennale in Fisica</strong> all'Università di Padova. Il mio lavoro si colloca all'incrocio tra fisica statistica ed economia: econofisica, complessità economica, network science e modellazione ad agenti.</span>
+        </p>
+        <p>
+          <span class="en">I am currently starting my <strong>master's thesis at ICTP</strong> (Abdus Salam International Centre for Theoretical Physics) in Trieste, under the supervision of Paolo Cermelli and Matteo Marsili.</span>
+          <span class="it">Sto attualmente iniziando la mia <strong>tesi magistrale all'ICTP</strong> (Abdus Salam International Centre for Theoretical Physics) a Trieste, sotto la supervisione di Paolo Cermelli e Matteo Marsili.</span>
+        </p>
+        <p>
+          <span class="en">Alongside research, I care about the physics community: I served as a <strong>student representative</strong> in Padua and volunteer with <strong>AISF</strong> and the <strong>UWC national selections</strong>.</span>
+          <span class="it">Accanto alla ricerca, tengo viva la comunità della fisica: sono stato <strong>rappresentante degli studenti</strong> a Padova e volontario con <strong>AISF</strong> e le <strong>selezioni nazionali UWC</strong>.</span>
+        </p>
+      </div>
+      <aside class="facts">
+        <h3>
+          <span class="en">Quick facts</span><span class="it">In breve</span>
+        </h3>
+        <div class="fact"><span class="en">Based in</span><span class="it">Base</span> <b>Turin, Italy</b></div>
+        <div class="fact"><span class="en">Research</span><span class="it">Ricerca</span> <b>Econophysics · Networks</b></div>
+        <div class="fact"><span class="en">Main tools</span><span class="it">Strumenti</span> <b>Python · JAX · MESA</b></div>
+        <div class="fact">
+          <span class="en">Languages</span><span class="it">Lingue</span>
+          <b>IT · EN · FR</b>
+        </div>
+        <div class="fact"><span class="en">Fun fact</span><span class="it">Curiosità</span> <b class="en">UWC Adriatic alumnus</b><b class="it">Alunno UWC Adriatico</b></div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <h2 class="sec-title"><i>02.</i> <span class="en">Projects &amp; research</span><span class="it">Progetti e ricerca</span></h2>
+    <p class="sec-sub">
+      <span class="en">A selection of research and coursework projects. Code and write-ups will land on GitHub as they are completed.</span>
+      <span class="it">Una selezione di progetti di ricerca e d'esame. Codice e relazioni approderanno su GitHub al completamento.</span>
+    </p>
+    <div class="proj-grid">
+
+      <article class="proj">
+        <div class="proj-top">
+          <span class="proj-year">2026 — 2027</span>
+          <span class="badge badge-wip"><span class="en">In progress</span><span class="it">In corso</span></span>
+        </div>
+        <h3><span class="en">Master's Thesis @ ICTP</span><span class="it">Tesi Magistrale @ ICTP</span></h3>
+        <p>
+          <span class="en">Thesis research at the Abdus Salam International Centre for Theoretical Physics in Trieste, under the supervision of Paolo Cermelli and Matteo Marsili. Topic: coming soon.</span>
+          <span class="it">Ricerca di tesi presso l'Abdus Salam International Centre for Theoretical Physics di Trieste, sotto la supervisione di Paolo Cermelli e Matteo Marsili. Argomento: in arrivo.</span>
+        </p>
+        <div class="tags"><span class="tag">Complex Systems</span><span class="tag">ICTP</span><span class="tag">Statistical Physics</span></div>
+      </article>
+
+      <article class="proj">
+        <div class="proj-top">
+          <span class="proj-year">2025 — 2026</span>
+          <span class="badge badge-wip"><span class="en">In progress</span><span class="it">In corso</span></span>
+        </div>
+        <h3><span class="en">Genetic agent-based crypto pair-trading pipeline</span><span class="it">Pipeline genetica ad agenti per pair-trading su crypto</span></h3>
+        <p>
+          <span class="en">A genetic-algorithm-inspired, agent-based pair-trading pipeline built on the cointegration network of cryptocurrency pairs. Group project for the Econophysics and Multi-Agent Systems labs.</span>
+          <span class="it">Pipeline di pair-trading ad agenti ispirata agli algoritmi genetici, costruita sulla rete di cointegrazione delle coppie di criptovalute. Progetto di gruppo per i laboratori di Econofisica e Tecniche Avanzate di Modellazione.</span>
+        </p>
+        <div class="tags"><span class="tag">Agent-Based</span><span class="tag">Cointegration</span><span class="tag">Genetic Algorithms</span><span class="tag">Python</span></div>
+        <div class="proj-meta">
+          <span class="en">with S. Ferriotto &amp; G. Conti · Prof. M. Maggiora</span>
+          <span class="it">con S. Ferriotto &amp; G. Conti · Prof. M. Maggiora</span>
+        </div>
+      </article>
+
+      <article class="proj">
+        <div class="proj-top">
+          <span class="proj-year">2026</span>
+          <span class="badge badge-done"><span class="en">Completed</span><span class="it">Completato</span></span>
+        </div>
+        <h3>A Small MSCI World GARCH Tournament</h3>
+        <p>
+          <span class="en">GARCH-family models (GARCH, GJR-GARCH, EGARCH) with normal and Student-t innovations compete on the MSCI World Index via the URTH ETF: in-sample fit, out-of-sample volatility forecasts, and VaR/ES at 1, 5 and 10-day horizons. Student-t innovations consistently capture tail risk better; no single specification dominates.</span>
+          <span class="it">Modelli della famiglia GARCH (GARCH, GJR-GARCH, EGARCH) con innovazioni normali e Student-t si sfidano sull'indice MSCI World tramite l'ETF URTH: bontà di adattamento in-sample, previsioni di volatilità out-of-sample e VaR/ES a orizzonti di 1, 5 e 10 giorni. Le innovazioni Student-t catturano sistematicamente meglio il rischio di coda; nessuna specificazione domina su tutti i criteri.</span>
+        </p>
+        <div class="tags"><span class="tag">GARCH</span><span class="tag">Volatility</span><span class="tag">VaR / ES</span><span class="tag">Econometrics</span></div>
+        <div class="proj-meta">
+          <span class="en">Profs. L. Gambetti &amp; I. Petrella</span>
+          <span class="it">Proff. L. Gambetti &amp; I. Petrella</span>
+        </div>
+      </article>
+
+      <article class="proj">
+        <div class="proj-top">
+          <span class="proj-year">2025</span>
+          <span class="badge badge-done"><span class="en">BSc Thesis</span><span class="it">Tesi Triennale</span></span>
+        </div>
+        <h3><span class="en">Economic complexity measures in the world trade web</span><span class="it">Misure di complessità economica nella rete del commercio mondiale</span></h3>
+        <p>
+          <span class="en">A review of the state of the art of economic complexity metrics built from world trade data, focusing on entropic measures based on Shannon entropy, and how they paint a more complete picture of the world trade web than traditional monetary metrics.</span>
+          <span class="it">Una rassegna dello stato dell'arte delle metriche di complessità economica costruite dai dati del commercio mondiale, con focus sulle misure entropiche basate sull'entropia di Shannon, e su come esse dipingano un quadro più completo della rete del commercio mondiale rispetto alle metriche monetarie tradizionali.</span>
+        </p>
+        <div class="tags"><span class="tag">Econophysics</span><span class="tag">Networks</span><span class="tag">Shannon Entropy</span><span class="tag">World Trade Web</span></div>
+        <div class="proj-meta">
+          <span class="en">Supervisors: F. Baldovin, A. Stella, G. Teza</span>
+          <span class="it">Relatori: F. Baldovin, A. Stella, G. Teza</span>
+        </div>
+      </article>
+
+      <article class="proj">
+        <div class="proj-top">
+          <span class="proj-year">2025</span>
+          <span class="badge badge-done"><span class="en">Coursework</span><span class="it">Corso</span></span>
+        </div>
+        <h3>Amalie Emmy Noether e i suoi Teoremi</h3>
+        <p>
+          <span class="en">An essay for the History of Physics course on Emmy Noether: her life, her two theorems linking symmetries and conservation laws, and her legacy — central to theoretical physics, modern mathematics, and the emancipation of women in academia.</span>
+          <span class="it">Elaborato per il corso di Storia della Fisica su Emmy Noether: la sua vita, i suoi due teoremi che legano simmetrie e leggi di conservazione, e la sua eredità — centrale per la fisica teorica, la matematica moderna e l'emancipazione femminile nel mondo accademico.</span>
+        </p>
+        <div class="tags"><span class="tag">History of Physics</span><span class="tag">Symmetries</span><span class="tag">Noether</span></div>
+        <div class="proj-meta">Prof. G. Peruzzi</div>
+      </article>
+
+      <article class="proj">
+        <div class="proj-top">
+          <span class="proj-year">2022</span>
+          <span class="badge badge-done"><span class="en">IB Extended Essay</span><span class="it">Extended Essay IB</span></span>
+        </div>
+        <h3><span class="en">Lavoisier and the French chemical revolution</span><span class="it">Lavoisier e la rivoluzione chimica francese</span></h3>
+        <p>
+          <span class="en">IB Extended Essay (French B, grade A) on the historical and cultural role of Lavoisier's <em>Traité élémentaire de chimie</em>: to what extent can historians claim it played a central role in the chemical revolution and in French national identity?</span>
+          <span class="it">Extended Essay IB (Francese B, grado A) sul ruolo storico e culturale del <em>Traité élémentaire de chimie</em> di Lavoisier: in che misura gli storici possono affermare che abbia svolto un ruolo centrale nella rivoluzione della chimica e nell'identità nazionale francese?</span>
+        </p>
+        <div class="tags"><span class="tag">History of Science</span><span class="tag">Lavoisier</span><span class="tag">French</span></div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- EDUCATION -->
+  <section id="education">
+    <h2 class="sec-title"><i>03.</i> <span class="en">Education</span><span class="it">Formazione</span></h2>
+    <p class="sec-sub">
+      <span class="en">From an IB diploma on the Adriatic coast to complex systems in Turin.</span>
+      <span class="it">Dalla maturità internazionale sull'Adriatico ai sistemi complessi a Torino.</span>
+    </p>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-years">2025 — 2027</div>
+        <h3><span class="en">Joint MSc, Physics of Complex Systems</span><span class="it">Laurea Magistrale, Fisica dei Sistemi Complessi</span> <span class="grade">110L/110 <span class="en">exp.</span><span class="it">prev.</span></span></h3>
+        <div class="school"><span class="en">University of Turin &amp; University of Eastern Piedmont "Amedeo Avogadro"</span><span class="it">Università di Torino &amp; Università del Piemonte Orientale "Amedeo Avogadro"</span></div>
+        <ul>
+          <li><span class="en">Socio-Economic track — Complexity Economics, Game &amp; Network Theory, Econophysics, Multi-Agent Systems Lab</span><span class="it">Curriculum socio-economico — Economia della Complessità, Teoria dei Giochi e delle Reti, Econofisica, Laboratorio di Sistemi Multi-Agente</span></li>
+        </ul>
+      </div>
+      <div class="tl-item">
+        <div class="tl-years">2022 — 2025</div>
+        <h3><span class="en">BSc, Physics</span><span class="it">Laurea Triennale, Fisica</span> <span class="grade">96/110</span></h3>
+        <div class="school"><span class="en">University of Padua — Dept. of Physics and Astronomy "Galileo Galilei"</span><span class="it">Università degli Studi di Padova — Dipartimento di Fisica e Astronomia "Galileo Galilei"</span></div>
+        <ul>
+          <li><span class="en">Focus: Theoretical Physics, Quantum Information Theory, Computational Methods</span><span class="it">Focus: Fisica Teorica, Teoria dell'Informazione Quantistica, Metodi Computazionali</span></li>
+          <li><span class="en">Student representative (Department Council, Degree Councils, Quality Assurance)</span><span class="it">Rappresentante degli studenti (Consiglio di Dipartimento, Consigli di Corso, Gruppo AQ)</span></li>
+        </ul>
+      </div>
+      <div class="tl-item">
+        <div class="tl-years">2020 — 2022</div>
+        <h3><span class="en">International Baccalaureate Diploma</span><span class="it">Diploma International Baccalaureate</span> <span class="grade">38/45</span></h3>
+        <div class="school">United World College of the Adriatic — Duino-Aurisina</div>
+        <ul>
+          <li><span class="en">Physics HL, Math AA HL, Chemistry HL · Extended Essay in French B (grade A)</span><span class="it">Fisica HL, Matematica AA HL, Chimica HL · Extended Essay in Francese B (grado A)</span></li>
+          <li><span class="en">Full scholarship funded by Regione Piemonte</span><span class="it">Borsa di studio integrale finanziata dalla Regione Piemonte</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <h2 class="sec-title"><i>04.</i> <span class="en">Skills &amp; toolbox</span><span class="it">Competenze e strumenti</span></h2>
+    <p class="sec-sub">
+      <span class="en">What I reach for when a complex system needs taming.</span>
+      <span class="it">Ciò che uso quando un sistema complesso va domato.</span>
+    </p>
+
+    <div class="skill-group">
+      <h3><span class="en">Data &amp; modeling</span><span class="it">Dati e modellazione</span></h3>
+      <div class="chips">
+        <span class="chip python">Python</span>
+        <span class="chip core">NumPy</span>
+        <span class="chip core">SciPy</span>
+        <span class="chip core">Pandas</span>
+        <span class="chip core">JAX</span>
+        <span class="chip core">Numba</span>
+        <span class="chip core">NetworkX</span>
+        <span class="chip core">Matplotlib</span>
+        <span class="chip core">Seaborn</span>
+        <span class="chip tool">AgentPy</span>
+        <span class="chip tool">MESA</span>
+        <span class="chip tool">PyNetLogo</span>
+        <span class="chip tool">NetLogo</span>
+      </div>
+    </div>
+
+    <div class="skill-group">
+      <h3><span class="en">Programming &amp; analysis</span><span class="it">Programmazione e analisi</span></h3>
+      <div class="chips">
+        <span class="chip python">C++</span>
+        <span class="chip core">ROOT</span>
+        <span class="chip tool">GNUPlot</span>
+        <span class="chip tool">Wolfram Mathematica</span>
+        <span class="chip tool">Arduino</span>
+      </div>
+    </div>
+
+    <div class="skill-group">
+      <h3><span class="en">Typesetting &amp; everyday tools</span><span class="it">Tipografia e strumenti quotidiani</span></h3>
+      <div class="chips">
+        <span class="chip python">LaTeX</span>
+        <span class="chip core">GNU/Linux</span>
+        <span class="chip tool">Fedora</span>
+        <span class="chip tool">Ubuntu</span>
+        <span class="chip tool">LibreOffice</span>
+        <span class="chip tool">AutoCAD</span>
+        <span class="chip tool">FreeCAD</span>
+        <span class="chip tool">LTspice</span>
+      </div>
+    </div>
+
+    <div class="skill-group">
+      <h3><span class="en">Languages</span><span class="it">Lingue</span></h3>
+      <div class="chips">
+        <span class="chip"><span class="en">Italian</span><span class="it">Italiano</span> · <span class="en">Native</span><span class="it">Madrelingua</span></span>
+        <span class="chip">Piemontèis · <span class="en">Native</span><span class="it">Madrelingua</span></span>
+        <span class="chip">English · C1</span>
+        <span class="chip">Français · A2</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROLES -->
+  <section id="roles">
+    <h2 class="sec-title"><i>05.</i> <span class="en">Community &amp; roles</span><span class="it">Comunità e ruoli</span></h2>
+    <p class="sec-sub">
+      <span class="en">Science is a team sport — here is where I play.</span>
+      <span class="it">La scienza è uno sport di squadra — ecco dove gioco.</span>
+    </p>
+    <div class="roles-grid">
+      <div class="role">
+        <span class="when">2022 — 2025</span>
+        <h3><span class="en">Student Representative</span><span class="it">Rappresentante degli studenti</span></h3>
+        <p><span class="en">University of Padua — Department Council, Degree Councils, and Accreditation &amp; Quality Assurance group for the Physics degrees.</span><span class="it">Università di Padova — Consiglio di Dipartimento, Consigli di Corso e Gruppo di Accreditamento e Assicurazione della Qualità dei Corsi di Fisica.</span></p>
+      </div>
+      <div class="role">
+        <span class="when">2023 — <span class="en">today</span><span class="it">oggi</span></span>
+        <h3>AISF — <span class="en">Italian Association of Physics Students</span><span class="it">Associazione Italiana Studenti di Fisica</span></h3>
+        <p><span class="en">Member; Social Media &amp; Communications lead of the Padua local chapter (2023–2025); co-organizer of a LaTeX mini-course for first-year students.</span><span class="it">Membro; responsabile Social Media e Comunicazioni del comitato locale di Padova (2023–2025); co-organizzatore di un mini-corso di LaTeX per le matricole.</span></p>
+      </div>
+      <div class="role">
+        <span class="when">2022 — 2025</span>
+        <h3><span class="en">UWC Italy — National Selections Commission</span><span class="it">UWC Italia — Commissione Selezioni Nazionali</span></h3>
+        <p><span class="en">Selector for regional and local UWC selection committees across Piemonte–Valle d'Aosta–Liguria, Veneto and Trentino-Alto Adige.</span><span class="it">Selezionatore per i comitati regionali e locali UWC in Piemonte–Valle d'Aosta–Liguria, Veneto e Trentino-Alto Adige.</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="contact-box">
+      <h2><span class="en">Let's talk complexity</span><span class="it">Parliamo di complessità</span></h2>
+      <p>
+        <span class="en">Whether it's research, collaboration, or a good question about networks — my inbox is open.</span>
+        <span class="it">Che sia ricerca, collaborazione o una bella domanda sulle reti — la mia casella di posta è aperta.</span>
+      </p>
+      <div class="contact-links">
+        <a href="mailto:giacomo.veglio@edu.unito.it">
+          <svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4.24-8 5-8-5V6l8 5 8-5v2.24z"/></svg>
+          giacomo.veglio@edu.unito.it
+        </a>
+        <a href="https://github.com/AgentGiacu" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M12 .5C5.6.5.5 5.6.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.5v-1.9c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.4-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.2c0 .3.2.6.8.5 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.6 18.4.5 12 .5z"/></svg>
+          GitHub
+        </a>
+        <a href="https://www.linkedin.com/in/giacomo-veglio-004ba0202" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14zM8.3 18.4v-8.2H5.6v8.2h2.7zM7 8.9a1.6 1.6 0 1 0 0-3.2 1.6 1.6 0 0 0 0 3.2zm11.4 9.5v-4.5c0-2.4-1.3-3.5-3-3.5-1.4 0-2 .8-2.4 1.3v-1.5h-2.7c0 .8 0 8.2 0 8.2h2.7v-4.6c0-.3 0-.5.1-.7.2-.5.7-1.1 1.5-1.1 1.1 0 1.5.8 1.5 2v4.4h2.8z"/></svg>
+          LinkedIn
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>© 2026 Giacomo Veglio</p>
+  <p class="lang-note">
+    <span class="en">Physics of Complex Systems · Turin · EN/IT</span>
+    <span class="it">Fisica dei Sistemi Complessi · Torino · EN/IT</span>
+  </p>
+</footer>
+
+<script>
+  // ---- language toggle ----
+  var langBtn = document.getElementById("langBtn");
+  function setLang(lang) {
+    document.documentElement.lang = lang;
+    langBtn.textContent = lang === "en" ? "IT" : "EN";
+    document.title = lang === "en"
+      ? "Giacomo Veglio — Physics of Complex Systems"
+      : "Giacomo Veglio — Fisica dei Sistemi Complessi";
+    try { localStorage.setItem("gv-lang", lang); } catch (e) {}
+  }
+  langBtn.addEventListener("click", function () {
+    setLang(document.documentElement.lang === "en" ? "it" : "en");
+  });
+  try {
+    var saved = localStorage.getItem("gv-lang");
+    if (saved === "it" || saved === "en") setLang(saved);
+  } catch (e) {}
+
+  // ---- animated network background ----
+  (function () {
+    var canvas = document.getElementById("netbg");
+    var ctx = canvas.getContext("2d");
+    var nodes = [];
+    var W, H;
+    var colors = ["#22d3ee", "#a78bfa", "#f472b6", "#34d399", "#fbbf24"];
+    var N = window.innerWidth < 700 ? 34 : 70;
+    var LINK_DIST = 150;
+
+    function resize() {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resize);
+    resize();
+
+    for (var i = 0; i < N; i++) {
+      nodes.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.35,
+        vy: (Math.random() - 0.5) * 0.35,
+        r: 1.4 + Math.random() * 2.2,
+        c: colors[Math.floor(Math.random() * colors.length)]
+      });
+    }
+
+    var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function frame() {
+      ctx.clearRect(0, 0, W, H);
+      for (var i = 0; i < N; i++) {
+        var a = nodes[i];
+        if (!reduced) {
+          a.x += a.vx; a.y += a.vy;
+          if (a.x < -20) a.x = W + 20; if (a.x > W + 20) a.x = -20;
+          if (a.y < -20) a.y = H + 20; if (a.y > H + 20) a.y = -20;
+        }
+        for (var j = i + 1; j < N; j++) {
+          var b = nodes[j];
+          var dx = a.x - b.x, dy = a.y - b.y;
+          var d = Math.sqrt(dx * dx + dy * dy);
+          if (d < LINK_DIST) {
+            ctx.strokeStyle = a.c;
+            ctx.globalAlpha = 0.16 * (1 - d / LINK_DIST);
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+          }
+        }
+        ctx.globalAlpha = 0.85;
+        ctx.fillStyle = a.c;
+        ctx.beginPath();
+        ctx.arc(a.x, a.y, a.r, 0, 6.2832);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+      requestAnimationFrame(frame);
+    }
+    frame();
+  })();
+</script>
+
+</body>
+</html>
